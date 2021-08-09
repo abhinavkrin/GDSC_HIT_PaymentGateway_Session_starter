@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domge's Meme Shop</title>
+    <link rel="stylesheet" href="styles/style.css" />
+</head>
+
+<body>
+    <header>
+        <h1 class="brand-name">
+            Domge's Meme Shomp
+        </h1>
+        <nav>
+            <ul id="nav-list">
+                <li><a href="/">Shomp</a></li>
+                <li><a href="/my-memes.html">My Memes</a></li>
+                <li id="logout-button" onclick="logout(event)" style="display: none;"><a href="#">Log out</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div id="app"></div>
+    <div id="loader"></div>
+    <div id="auth-container">
+        <div class="auth-form">
+            <form onsubmit="onSignUpSubmit(event);">
+                <div class="form-control">
+                    <input type="text" name="email" placeholder="email" id="login-email" />
+                </div>
+                <div class="form-control">
+                    <input type="password" name="password" placeholder="pamssword" id="login-password" />
+                </div>
+                <div class="form-control">
+                    <input type="password" name="password3" placeholder="confirm pamssword" id="login-password2" />
+                </div>
+                <div class="form-control">
+                    <button type="submit">Create Amccount</button>
+                </div>
+                <hr/>
+                <div class="form-control" style="text-align: center">
+                    <a href="/">
+                        <strong>Lomg In</strong>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <footer>
+        © Domge's Compyright
+    </footer>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyAjSkfB1FDS0y61QM-4Z0NB78Tg0jl66n0",
+            authDomain: "domge-shop.firebaseapp.com",
+            projectId: "domge-shop",
+            storageBucket: "domge-shop.appspot.com",
+            messagingSenderId: "93894955041",
+            appId: "1:93894955041:web:f2c428ced125d66dce5360",
+            measurementId: "G-LC06H1XMZB"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="/js/app.js"></script>
+    <script>
+        view.showLoader();
+        firebase.auth().onAuthStateChanged(function(user){
+            view.hideLoader();
+            if(user){
+                window.location.href = "/";
+            }
+        });
+        function onSignUpSubmit(e){
+            e.preventDefault();
+            view.showLoader();
+            var email = document.getElementById("login-email").value;
+            var password = document.getElementById("login-password").value;
+            var password2 = document.getElementById("login-password2").value;
+            if(password !== password2){
+                alert("password do not match");
+                view.hideLoader();
+                return;
+            }
+            firebase.auth().createUserWithEmailAndPassword(email,password)
+                .then()
+                .catch(function(error){
+                    console.error(error);
+                    view.hideLoader();
+                    alert(error.code);
+                })
+        }
+    </script>
+</body>
+
+</html>
