@@ -4,84 +4,57 @@ const admin = require('firebase-admin');
 var router = express.Router();
 const { razorpayInstance } = require('../lib/RazorpayInstance');
 router.route('/products')
+//send list of active products
 .get(async(req,res,next) =>{
   try {
-    const products = await admin.firestore().collection('products').where("active","==",true).get();
-    res.json(products.docs.map(doc => ({id: doc.id, data: doc.data()})));
+    res.send("hello from " + req.originalUrl);
   } catch(e){
     next(e);
   }
 })
 
 router.route('/products/:productId')
+//send details of product with the given productId
 .get(async(req,res,next) => {
   try {
-    const product = await admin.firestore().collection('products').doc(req.params.productId).get();
-    res.json({id: product.id, data: product.data()});
+    res.send("hello from " + req.originalUrl);
   } catch(e){
     next(e);
   }
 })
 
 router.route('/orders')
+//send completed orders of the current user
 .get(verifyUser, async (req,res,next)=> {
   try {
-    const orders = await admin.firestore().collection('orders').where("userId","==",req.user.uid).get();
-    const ordersWithProducts = [];
-    for(let i = 0; i<orders.docs.length; i++){
-      const product = await admin.firestore().collection('products').doc(orders.docs[i].data().productId).get();
-      ordersWithProducts.push({
-        id: orders.docs[i].id,
-        data: {
-          ...orders.docs[i].data(), product: product.data()
-        }
-      });
-    }
-    res.json(ordersWithProducts);
+    res.send("hello from " + req.originalUrl);
+    //fetch orders from DB 
+
+    //fetch products related with the orders
+
   } catch(e){
     console.error(e);
     next(e);
   }
 })
+
+//create new order for the given product
 .post(verifyUser, async (req,res,next) => {
+  res.send("hello from " + req.originalUrl);
+  
   const userId = req.user.uid;
   const {productId} = req.body;
-  console.log(productId);
+
   try {
-    const product = (await admin.firestore().collection('products').doc(productId).get()).data();
-    if(product === null){
-      res.send(404);
-      return;
-    }
-    if(!product.active){
-      res.send(404);
-      return;
-    }
-    //create a transaction
-    const transaction = {
-      createdOn: admin.firestore.Timestamp.now(),
-      updatedOn: admin.firestore.Timestamp.now(),
-      productId,
-      price: product.price,
-      userId,
-      status: "PENDING",
-      orderId: null,
-      paymentId: null,
-    }
-    const transactionRef = await admin.firestore().collection('transactions').add(transaction);
+    //fetch product from DB and check if available
     
-    const order = await razorpayInstance.orders.create({
-      amount: product.price.amount, 
-      currency: product.price.currency, 
-      receipt: transactionRef.id, 
-      notes: {
-        userId,
-        productId,
-        transactionId: transactionRef.id,
-        source: "WEBSITE"
-      }
-    });
-    res.json(order);
+    //create a transaction and add it to DB
+    
+    //create order on razorpay
+    
+    //send order details received from razorpay
+
+    // res.json(order);
   }
   catch(e){
     console.error(e);

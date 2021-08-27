@@ -52,48 +52,9 @@
         function onCheckoutSubmit(name,email,phone){
             view.showLoader();
             var product = model.getCartProduct();
-            firebase.auth().currentUser.getIdToken(false)
-                .then(token => {
-                    fetch('/api/orders', {
-                        method: "post",
-                        headers: {
-                            Authorization: 'Bearer '+token,
-                            'content-type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            productId: product.id
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(order => {
-                        console.log(order);
-                        var options = {
-                            "key": "rzp_test_tkygwk0bn1oDRP", // Enter the Key ID generated from the Dashboard
-                            "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-                            "currency": order.currency,
-                            "name": "Domge's Meme Shomp",
-                            //"image": "https://example.com/your_logo",
-                            "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                            "handler": onPaymentSuccess,
-                            "prefill": {
-                                "name": name,
-                                "email": email,
-                                "contact": phone
-                            },
-                            "notes": order.notes,
-                            "theme": {
-                                "color": "#3399cc"
-                            }
-                        };
-                        var rzp1 = new Razorpay(options);
-                        view.hideLoader();
-                        rzp1.open();
-                    })
-                    .catch((e) => {
-                        console.error(e)
-                        view.hideLoader();
-                    });
-            });
+            alert("Product "+product.name)
+            //request our server to create and order
+            //Pass order details to razorpay checkout
         }
         view.showLoader();
         onUserSignIn((user) => {
